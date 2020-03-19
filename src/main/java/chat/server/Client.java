@@ -46,7 +46,7 @@ public class Client {
     }
 
     public boolean isOpen() {
-        return mSender != null;
+        return !mConnection.isClosed() && mSender != null;
     }
 
     @Override

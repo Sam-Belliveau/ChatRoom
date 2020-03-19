@@ -68,7 +68,6 @@ public class Server {
     private void accept() {
         try {
             Client client = new Client(mServer.accept());
-            brodcast("New Connection from " + client + " (" + mUsers.getUsers() + " / ?)");
             mUsers.add(client);
         } catch(Exception e) {
             mOutput.println("Ooops! Shits fucked");
@@ -88,7 +87,7 @@ public class Server {
         while(server.isRunning()) {
             server.run();
 
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
         
     }

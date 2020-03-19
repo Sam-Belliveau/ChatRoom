@@ -20,6 +20,7 @@ public class ClientManager {
     public void add(Client client) {
         if(this.getUsers() < mMaxUsers) {
             mUsers.push(client);
+            brodcast("New Connection from " + client + " (" + mUsers.getUsers() + " / ?)");
         } else {
             client.send("Chat Room is Full (" + this.getUsers() + " / " + mMaxUsers + ")!");
             client.close();
