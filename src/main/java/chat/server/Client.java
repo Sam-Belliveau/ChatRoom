@@ -30,7 +30,7 @@ public class Client {
 
     public void send(String msg) {
         if(mSender != null) {
-            mSender.print(msg);
+            mSender.println(msg);
             mSender.flush();
         }
     }
@@ -43,6 +43,10 @@ public class Client {
         }
         
         mSender = null;
+    }
+
+    public boolean isOpen() {
+        return mSender != null;
     }
 
     @Override

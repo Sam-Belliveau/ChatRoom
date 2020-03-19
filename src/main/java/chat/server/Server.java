@@ -7,19 +7,17 @@ import java.util.LinkedList;
 
 public class Server {
 
-    private final int mMaxUsers;
-
     private ServerSocket mServer;
-    private LinkedList<Client> mUsers;
+
+    private ClientManager mUsers;
 
     private PrintStream mOutput;
 
     private Thread mAcceptor;
 
     public Server(int port, int maxUsers) throws IOException {
-        mMaxUsers = maxUsers;
-        mServer = new ServerSocket(port, mMaxUsers * 2);
-        mUsers = new LinkedList<Client>();
+        mServer = new ServerSocket(port, maxUsers * 2);
+        mUsers = new ClientManager(maxUsers);
 
         mOutput = System.out;
 
@@ -50,11 +48,7 @@ public class Server {
     public void stop() {
         if(this.isRunning()) {
             try {
-                while(!mUsers.isEmpty()) {
-                    Client user = mUsers.pop();
-                    user.close();
-                }
-
+                mUsers.close();
                 mServer.close();
             } catch (IOException e) {
                 
@@ -68,31 +62,21 @@ public class Server {
 
     public void brodcast(String msg) {
         mOutput.println("[SERVER BRODCAST] " + msg);
-        for(Client user : mUsers) {
-            user.send(msg);
-        }
+        mUsers.broadcast(msg);
     }
 
     private void accept() {
         try {
             Client client = new Client(mServer.accept());
-
-            int current = mUsers.size();
-    
-            if(current < mMaxUsers) {
-                brodcast("New Connection from " + client);
-                mUsers.push(client);
-            } else {
-                client.send("Chat Room is Full (" + current + " / " + mMaxUsers + ")!");
-                client.close();
-            }
+            brodcast("New Connection from " + client + " (" + mUsers.getUsers() + " / ?)");
+            mUsers.add(client);
         } catch(Exception e) {
             mOutput.println("Ooops! Shits fucked");
         }
     }
 
     public void run() {
-        brodcast("hello bitch \n");
+        mUsers.clean();
     }
 
     public static void main(String[] args) throws Exception {
